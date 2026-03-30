@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseNews — Presentazione Interattiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d45;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --accent3: #f59e0b;
+  --accent4: #10b981;
+  --red: #ef4444;
+  --text: #e2e8f0;
+  --text-dim: #64748b;
+  --text-mid: #94a3b8;
+  --code-bg: #0d1117;
+  --nav-w: 260px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+#nav {
+  width: var(--nav-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+.nav-logo { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
+.nav-logo .logo-tag {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+.nav-logo .logo-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+.nav-section-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); padding: 16px 20px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 20px;
+  cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent;
+  font-size: 13px; color: var(--text-mid); text-decoration: none;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { border-left-color: var(--accent); background: rgba(59,130,246,.08); color: var(--accent); }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); min-width: 18px; }
+.nav-item.active .nav-num { color: var(--accent); }
+
+/* ── MAIN ── */
+#main { margin-left: var(--nav-w); flex: 1; max-width: calc(100vw - var(--nav-w)); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; padding: 80px 60px; position: relative; overflow: hidden;
+}
+#hero::before {
+  content: ''; position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,.12) 0%, transparent 70%); pointer-events: none;
+}
+.hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+.hero-title { font-family: 'Syne', sans-serif; font-size: clamp(52px, 7vw, 88px); font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 10px; }
+.hero-title .accent { color: var(--accent); }
+.hero-title .accent2 { color: var(--accent2); }
+.hero-subtitle { font-size: 18px; color: var(--text-mid); font-weight: 300; margin-bottom: 48px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px; }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 12px; border-radius: 4px; border: 1px solid; }
+.tag-blue { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,.07); }
+.tag-cyan { border-color: var(--accent2); color: var(--accent2); background: rgba(6,182,212,.07); }
+.tag-amber { border-color: var(--accent3); color: var(--accent3); background: rgba(245,158,11,.07); }
+.tag-green { border-color: var(--accent4); color: var(--accent4); background: rgba(16,185,129,.07); }
+.tag-red { border-color: var(--red); color: var(--red); background: rgba(239,68,68,.07); }
+.hero-stats { display: flex; gap: 40px; }
+.stat-item { display: flex; flex-direction: column; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+/* ── SECTION ── */
+.section { padding: 80px 60px; border-top: 1px solid var(--border); }
+.section-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 30px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+  background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.3);
+  padding: 4px 8px; border-radius: 4px; margin-top: 6px; white-space: nowrap;
+}
+.section-title { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+.section-title span { color: var(--accent); }
+.theory-text { font-size: 15px; line-height: 1.8; color: var(--text-mid); margin-bottom: 24px; max-width: 900px; }
+.theory-text strong { color: var(--text); }
+
+/* ── CODE BLOCKS ── */
+.code-wrap {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 32px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+.code-body { padding: 20px 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; color: #f8f8f2; }
+.code-body .kw { color: #ff79c6; font-weight: bold; } /* Keywords */
+.code-body .cls { color: #8be9fd; } /* Classes */
+.code-body .fn { color: #50fa7b; } /* Functions */
+.code-body .str { color: #f1fa8c; } /* Strings */
+.code-body .cm { color: #6272a4; font-style: italic; } /* Comments */
+
+/* ── DEMO CONTAINER ── */
+.demo-container { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 32px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.demo-toolbar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.demo-title { font-size: 12px; color: var(--text-mid); font-family: 'JetBrains Mono', monospace; }
+.demo-btn { margin-left: auto; background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; transition: opacity 0.2s; }
+.demo-btn:hover { opacity: 0.85; }
+.demo-btn.red { background: var(--red); }
+.demo-screen { padding: 20px 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; min-height: 350px; max-height: 500px; overflow-y: auto; }
+.out-line { display: block; min-height: 1.6em; }
+.out-ok { color: #50fa7b; } .out-warn { color: #f1fa8c; } .out-err { color: #ff5555; }
+.out-info { color: #8be9fd; } .out-dim { color: #6272a4; } .out-bold { font-weight: 700; color: var(--text); }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="logo-tag">-PulseNews</div>
+    <div class="logo-sub">Presentazione</div>
+  </div>
+  <div class="nav-section-label">Panoramica</div>
+  <a class="nav-item active" href="#hero"><span class="nav-num">00</span> Home</a>
+  <div class="nav-section-label">Blocchi del codice</div>
+  <a class="nav-item" href="#s0"><span class="nav-num">S0</span> Eccezioni</a>
+  <a class="nav-item" href="#s1"><span class="nav-num">S1</span> Articolo</a>
+  <a class="nav-item" href="#s2"><span class="nav-num">S2</span> Fonti</a>
+  <a class="nav-item" href="#s3"><span class="nav-num">S3</span> Filtri</a>
+  <a class="nav-item" href="#s4"><span class="nav-num">S4</span> Analizzatore</a>
+  <a class="nav-item" href="#s5"><span class="nav-num">S5</span> Cercatore</a>
+  <a class="nav-item" href="#s6"><span class="nav-num">S6</span> Catalogo</a>
+  <a class="nav-item" href="#s7"><span class="nav-num">S7</span> Fetcher Async</a>
+  <a class="nav-item" href="#s8"><span class="nav-num">S8</span> Thread Monitor</a>
+  <a class="nav-item" href="#s9"><span class="nav-num">S9</span> PulseNews</a>
+  <div class="nav-section-label">Simulazione</div>
+  <a class="nav-item" href="#live"><span class="nav-num">▶</span> Demo Finale</a>
+</nav>
+
+<main id="main">
+
+  <section id="hero">
+    <div class="hero-eyebrow">// Giorgia Quarta, Celeste Monda Maria — 4C INF</div>
+    <h1 class="hero-title">Pulse<span class="accent">News</span><span class="accent2">.</span></h1>
+    <p class="hero-subtitle">Aggregatore Intelligente di Notizie in Tempo Reale</p>
+    <div class="hero-tags">
+      <span class="tag tag-blue">OOP · Ereditarietà</span>
+      <span class="tag tag-cyan">asyncio · threading</span>
+      <span class="tag tag-amber">Regex · map/filter/reduce</span>
+      <span class="tag tag-green">Design Pattern</span>
+      <span class="tag tag-red">Eccezioni personalizzate</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Moduli Implementati</div></div>
+      <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Modelli Concorrenza</div></div>
+    </div>
+  </section>
+
+  <section id="s0" class="section">
+    <div class="section-header">
+      <span class="section-num">S0</span>
+      <h2 class="section-title">Eccezioni <span>Personalizzate</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Ereditarietà da Exception</strong> Le eccezioni personalizzate ereditano dalla classe base Exception, mantenendo compatibilità con il sistema di gestione errori di Python e permettendo l'uso di try/except standard.
+      <br></br>
+      <strong>- Errori Specifici del Dominio</strong> Ogni eccezione rappresenta uno stato di errore particolare dell'applicazione PulseNews, migliorando la leggibilità e la manutenibilità del codice attraverso messaggi di errore contestualizzati.
+      <br></br>
+      <strong>- Gestione Gerarchica</strong> Utilizzo di una gerarchia di eccezioni con PulseNewsError come base, permettendo catch selettivi e una gestione modulare degli errori in diversi livelli dell'applicazione.
+      <br></br>
+      <strong>- Messaggi Informativi</strong> Le eccezioni includono messaggi dettagliati per facilitare il debugging e la comprensione del problema, fornendo informazioni utili per la risoluzione.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">PulseNewsError</span>(<span class="cls">Exception</span>):
+    <span class="str">"""Eccezione base per tutti gli errori dell'applicazione PulseNews."""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">QueryNonValidaError</span>(<span class="cls">PulseNewsError</span>):
+    <span class="str">"""
+    Sollevata quando la stringa di ricerca non è una regex valida.
+    Esempio: raise QueryNonValidaError("Espressione regolare non valida: '[abc'")
+    """</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">FonteNonRaggiungibileError</span>(<span class="cls">PulseNewsError</span>):
+    <span class="str">"""
+    Sollevata quando una fonte non può essere letta (file mancante, JSON malformato, ecc.).
+    """</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">CatalogoVuotoError</span>(<span class="cls">PulseNewsError</span>):
+    <span class="str">"""Sollevata quando si tenta un'operazione su un catalogo senza articoli."""</span>
+    <span class="kw">pass</span></code></pre></div>
+    </div>
+  </section>
+
+  <section id="s1" class="section">
+    <div class="section-header">
+      <span class="section-num">S1</span>
+      <h2 class="section-title">Modello <span>Articolo</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- DTO Pattern</strong> La classe Articolo incapsula i dati di una notizia in un oggetto strutturato, facilitando il passaggio e la manipolazione dei dati nell'applicazione senza usare dizionari caotici, migliorando la type safety.
+      <br></br>
+      <strong>- Property e Validazione</strong> Utilizzo di @property per titolo con setter che valida l'input, prevenendo titoli vuoti o invalidi attraverso eccezioni e garantendo l'integrità dei dati.
+      <br></br>
+      <strong>- Uguaglianza Personalizzata</strong> Override di __eq__ per definire l'uguaglianza basata su titolo e fonte, essenziale per gestire duplicati nel Catalogo e ottimizzare le operazioni di set.
+      <br></br>
+      <strong>- Serializzazione JSON</strong> Metodo to_dict per convertire l'oggetto in dizionario, compatibile con JSON per salvataggio o trasmissione dati, semplificando l'interfaccia con fonti esterne.
+      <br></br>
+      <strong>- Gestione Temporale</strong> Conversione automatica della data da stringa ISO a oggetto datetime per operazioni di confronto, ordinamento e filtri temporali, utilizzando la libreria standard datetime.
+      <br></br>
+      <strong>- Attributi Opzionali</strong> Supporto per tags come lista dinamica e rilevanza come punteggio float, con valori di default per flessibilità e personalizzazione delle notizie.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Articolo</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, id: <span class="cls">str</span>, titolo: <span class="cls">str</span>, corpo: <span class="cls">str</span>, autore: <span class="cls">str</span>,
+                 fonte: <span class="cls">str</span>, data_pubblicazione: <span class="cls">str</span>, categoria: <span class="cls">str</span>,
+                 tags: <span class="cls">list</span> = <span class="kw">None</span>, rilevanza: <span class="cls">float</span> = 0.5):
+        <span class="kw">self</span>._id = id
+        <span class="kw">self</span>.titolo = titolo  <span class="cm"># Chiama il setter per la validazione</span>
+        <span class="kw">self</span>.corpo = corpo    <span class="cm"># Chiama il setter per la validazione</span>
+        <span class="kw">self</span>._autore = autore
+        <span class="kw">self</span>._fonte = fonte
+        <span class="kw">self</span>._data_pubblicazione = datetime.fromisoformat(data_pubblicazione)
+        <span class="kw">self</span>._categoria = categoria
+        <span class="kw">self</span>.tags = tags <span class="kw">if</span> tags <span class="kw">is not None else</span> []
+        <span class="kw">self</span>.rilevanza = rilevanza
+        
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">titolo</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._titolo
+
+    <span class="kw">@titolo.setter</span>
+    <span class="kw">def</span> <span class="fn">titolo</span>(<span class="kw">self</span>, valore: <span class="cls">str</span>):
+        <span class="kw">if not</span> valore <span class="kw">or not</span> valore.strip():
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Il titolo non può essere vuoto."</span>)
+        <span class="kw">self</span>._titolo = valore
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, altro):
+        <span class="str">"""Due articoli sono uguali se hanno stesso titolo E stessa fonte"""</span>
+        <span class="kw">if not isinstance</span>(altro, Articolo):
+            <span class="kw">return False</span>
+        <span class="kw">return self</span>.titolo == altro.titolo <span class="kw">and self</span>.fonte == altro.fonte
+
+    <span class="kw">def</span> <span class="fn">to_dict</span>(<span class="kw">self</span>) -> <span class="cls">dict</span>:
+        <span class="str">"""Serializza l'articolo in un dizionario JSON-friendly."""</span>
+        <span class="kw">return</span> {
+            <span class="str">"id"</span>: <span class="kw">self</span>.id,
+            <span class="str">"titolo"</span>: <span class="kw">self</span>.titolo,
+            <span class="str">"data_pubblicazione"</span>: <span class="kw">self</span>.data_pubblicazione.isoformat(),
+            <span class="str">"categoria"</span>: <span class="kw">self</span>.categoria
+        }</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s2" class="section">
+    <div class="section-header">
+      <span class="section-num">S2</span>
+      <h2 class="section-title">Gestione <span>Fonti</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Principio Aperto/Chiuso</strong> L'architettura permette l'estensione con nuove fonti senza modificare il codice esistente, grazie all'ereditarietà, seguendo i principi SOLID per un design scalabile.
+      <br></br>
+      <strong>- Classi Astratte (ABC)</strong> La classe Fonte impone l'implementazione del metodo fetch_articoli() nelle sottoclassi concrete, garantendo un'interfaccia uniforme.
+      <br></br>
+      <strong>- Polimorfismo</strong> Diverse fonti (JSON, API, ecc.) implementano fetch_articoli() in modi specifici, trattate uniformemente dal Catalogo attraverso riferimenti alla classe base.
+      <br></br>
+      <strong>- Gestione Stato</strong> Attributo 'attiva' per abilitare/disabilitare fonti dinamicamente senza rimuoverle, permettendo configurazioni flessibili dell'applicazione.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Fonte</span>(ABC):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome: <span class="cls">str</span>, url: <span class="cls">str</span>, categoria_default: <span class="cls">str</span>, attiva: <span class="cls">bool</span> = <span class="kw">True</span>):
+        <span class="kw">self</span>._nome = nome
+        <span class="kw">self</span>._url = url
+        <span class="kw">self</span>._categoria_default = categoria_default
+        <span class="kw">self</span>._attiva = attiva
+
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">fetch_articoli</span>(<span class="kw">self</span>) -> <span class="cls">list</span>:
+        <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">FonteJSON</span>(Fonte):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, url, cat, percorso_file, attiva=<span class="kw">True</span>):
+        <span class="kw">super</span>().<span class="fn">__init__</span>(nome, url, cat, attiva)
+        <span class="kw">self</span>._percorso_file = percorso_file
+
+    <span class="kw">def</span> <span class="fn">fetch_articoli</span>(<span class="kw">self</span>) -> <span class="cls">list</span>:
+        <span class="kw">try</span>:
+            <span class="kw">with open</span>(<span class="kw">self</span>._percorso_file, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+                dati_grezzi = json.load(f)
+                articoli_list = []
+                <span class="kw">for</span> item <span class="kw">in</span> dati_grezzi.get(<span class="str">"articoli"</span>, []):
+                    articolo = Articolo.from_dict(item, <span class="kw">self</span>.nome)
+                    articoli_list.append(articolo)
+                <span class="kw">return</span> articoli_list
+        <span class="kw">except</span> (<span class="cls">FileNotFoundError</span>, json.<span class="cls">JSONDecodeError</span>) <span class="kw">as</span> e:
+            <span class="kw">raise</span> <span class="cls">FonteNonRaggiungibileError</span>(<span class="str">f"Errore caricamento: {e}"</span>)</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s3" class="section">
+    <div class="section-header">
+      <span class="section-num">S3</span>
+      <h2 class="section-title">Sistema di <span>Filtri</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Programmazione Funzionale</strong> Uso di funzioni lambda e built-in come filter() per applicare criteri di filtraggio in modo dichiarativo, evitando cicli imperativi.
+      <br></br>
+      <strong>- Concatenazione di Filtri</strong> Possibilità di applicare più filtri in sequenza, concatenandoli elegantemente, per query complesse senza codice ripetitivo.
+      <br></br>
+      <strong>- Criteri Dinamici</strong> I filtri possono essere passati come argomenti, permettendo flessibilità nell'interrogazione e personalizzazione runtime.
+      <br></br>
+      <strong>- Metodi Statici</strong> Tutti i metodi sono statici per un uso stateless e modulare del sistema di filtri, facilitando il testing e il riutilizzo.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Filtri</span>:
+    <span class="str">"""Collezione di metodi statici per filtrare liste di articoli."""</span>
+
+    <span class="kw">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">applica_filtri</span>(articoli: <span class="cls">list</span>, filtri: <span class="cls">list</span>) -> <span class="cls">list</span>:
+        <span class="kw">for</span> f <span class="kw">in</span> filtri:
+            articoli = <span class="cls">list</span>(<span class="cls">filter</span>(f, articoli))
+        <span class="kw">return</span> articoli
+
+    <span class="kw">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">filtra_per_categoria</span>(categoria: <span class="cls">str</span>):
+        <span class="str">"""Restituisce una lambda function che filtra per la categoria esatta."""</span>
+        <span class="kw">return lambda</span> art: art.categoria.lower() == categoria.lower()
+
+    <span class="kw">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">filtra_recenti</span>(giorni: <span class="cls">int</span>):
+        <span class="str">"""Restituisce articoli pubblicati negli ultimi X giorni."""</span>
+        oggi = datetime.now()
+        <span class="kw">return lambda</span> art: (oggi - art.data_pubblicazione).days <= giorni</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s4" class="section">
+    <div class="section-header">
+      <span class="section-num">S4</span>
+      <h2 class="section-title">Analizzatore <span>Testuale</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Espressioni Regolari (Regex)</strong> Utilizzo di re.findall per estrarre parole alfabetiche dal testo, rimuovendo punteggiatura e caratteri speciali per un'analisi pulita.
+      <br></br>
+      <strong>- Rimozione Stop-Words</strong> Filtro funzionale per escludere parole comuni inutili, migliorando la qualità delle keyword e riducendo il rumore nei risultati.
+      <br></br>
+      <strong>- Conteggio Frequenze</strong> Classe Counter per calcolare le occorrenze e restituire le top keyword, sfruttando strutture dati efficienti per prestazioni ottimali.
+      <br></br>
+      <strong>- Pulizia Testo</strong> Rimozione di URL e caratteri non alfanumerici per un'analisi più accurata, utilizzando regex per pattern complessi.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Analizzatore</span>:
+    STOP_WORDS = {<span class="str">"il"</span>, <span class="str">"la"</span>, <span class="str">"e"</span>, <span class="str">"di"</span>, <span class="str">"in"</span>, <span class="str">"per"</span>, <span class="str">"con"</span>, <span class="str">"su"</span>, <span class="str">"un"</span>, <span class="str">"una"</span>}
+
+    <span class="kw">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">estrai_keyword</span>(testo: <span class="cls">str</span>, top_n: <span class="cls">int</span> = 5) -> <span class="cls">list</span>:
+        <span class="cm"># 1. Rimuove URL</span>
+        testo_pulito = re.sub(<span class="str">r"http\S+|www\S+"</span>, <span class="str">""</span>, testo)
+        
+        <span class="cm"># 2. Estrae solo le parole alfabetiche (no punteggiatura/numeri)</span>
+        parole = re.findall(<span class="str">r"\b[a-zA-Zàèéìòù]{4,}\b"</span>, testo_pulito.lower())
+        
+        <span class="cm"># 3. Applica un filtro funzionale per escludere le stop words</span>
+        parole_utili = <span class="cls">list</span>(<span class="cls">filter</span>(<span class="kw">lambda</span> w: w <span class="kw">not in</span> Analizzatore.STOP_WORDS, parole))
+        
+        <span class="cm"># 4. Usa Counter per le frequenze e restituisce le prime top_n</span>
+        conteggio = Counter(parole_utili)
+        <span class="kw">return</span> [parola <span class="kw">for</span> parola, freq <span class="kw">in</span> conteggio.most_common(top_n)]</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s5" class="section">
+    <div class="section-header">
+      <span class="section-num">S5</span>
+      <h2 class="section-title">Motore <span>Cercatore</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- List Comprehensions</strong> Sintassi concisa per filtrare articoli che matchano la regex query, combinando filtri e trasformazioni in una singola espressione.
+      <br></br>
+      <strong>- Regex Search</strong> re.search per ricerche case-insensitive nel titolo e corpo degli articoli, supportando pattern complessi per query avanzate.
+      <br></br>
+      <strong>- Ordinamento Dinamico</strong> sorted() con key lambda per ordinare per data o altri criteri, permettendo ordinamenti personalizzati senza codice aggiuntivo.
+      <br></br>
+      <strong>- Storico Ricerche</strong> Tracciamento delle query eseguite per analisi e ottimizzazioni future, memorizzando statistiche per migliorare le prestazioni.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Cercatore</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
+        <span class="kw">self</span>._catalogo = catalogo
+        <span class="kw">self</span>._storico_ricerche = []
+
+    <span class="kw">def</span> <span class="fn">cerca_testo</span>(<span class="kw">self</span>, regex_query: <span class="cls">str</span>, ignora_case: <span class="cls">bool</span> = <span class="kw">True</span>) -> <span class="cls">list</span>:
+        <span class="kw">try</span>:
+            flags = re.IGNORECASE <span class="kw">if</span> ignora_case <span class="kw">else</span> 0
+            pattern = re.compile(regex_query, flags)
+            
+            risultati = [
+                art <span class="kw">for</span> art <span class="kw">in self</span>._catalogo.articoli
+                <span class="kw">if</span> pattern.search(art.titolo) <span class="kw">or</span> pattern.search(art.corpo)
+            ]
+            
+            <span class="kw">self</span>._storico_ricerche.append((regex_query, <span class="cls">len</span>(risultati)))
+            <span class="kw">return</span> risultati
+        <span class="kw">except</span> re.error:
+            <span class="kw">raise</span> <span class="cls">QueryNonValidaError</span>(<span class="str">f"Regex non valida: {regex_query}"</span>)
+
+    <span class="kw">def</span> <span class="fn">ordina_per_data</span>(<span class="kw">self</span>, articoli: <span class="cls">list</span>, decrescente: <span class="cls">bool</span> = <span class="kw">True</span>) -> <span class="cls">list</span>:
+        <span class="str">"""Ordina la lista degli articoli per data_pubblicazione"""</span>
+        <span class="kw">return sorted</span>(articoli, key=<span class="kw">lambda</span> a: a.data_pubblicazione, reverse=decrescente)</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s6" class="section">
+    <div class="section-header">
+      <span class="section-num">S6</span>
+      <h2 class="section-title">Catalogo <span>Centrale</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Singleton Pattern</strong> Il Catalogo è l'unica fonte di verità in memoria per gli articoli, centralizzando l'accesso ai dati.
+      <br></br>
+      <strong>- Set per Unicità</strong> Utilizzo di set() per garantire assenza di duplicati, basandosi su __eq__, ottimizzando le operazioni di inserimento.
+      <br></br>
+      <strong>- Gestione Fonti</strong> Registro delle fonti per fetch centralizzato, permettendo l'aggiunta dinamica di nuove fonti dati.
+      <br></br>
+      <strong>- Property Sicura</strong> Esposizione degli articoli come lista immutabile per proteggere l'integrità dei dati e prevenire modifiche accidentali.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Catalogo</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>._articoli = <span class="cls">set</span>()  <span class="cm"># Usiamo un Set per evitare duplicati in automatico</span>
+        <span class="kw">self</span>._fonti = {}
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">articoli</span>(<span class="kw">self</span>) -> <span class="cls">list</span>:
+        <span class="cm"># Espone una vista lista sicura</span>
+        <span class="kw">return list</span>(<span class="kw">self</span>._articoli)
+
+    <span class="kw">def</span> <span class="fn">aggiungi_articoli</span>(<span class="kw">self</span>, nuovi_articoli: <span class="cls">list</span>) -> <span class="cls">int</span>:
+        <span class="str">"""Aggiunge una lista di articoli e ritorna il numero di aggiunte effettive"""</span>
+        conteggio_iniziale = <span class="cls">len</span>(<span class="kw">self</span>._articoli)
+        <span class="kw">self</span>._articoli.update(nuovi_articoli)
+        <span class="kw">return</span> <span class="cls">len</span>(<span class="kw">self</span>._articoli) - conteggio_iniziale
+
+    <span class="kw">def</span> <span class="fn">registra_fonte</span>(<span class="kw">self</span>, fonte: Fonte):
+        <span class="kw">self</span>._fonti[fonte.nome] = fonte</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s7" class="section">
+    <div class="section-header">
+      <span class="section-num">S7</span>
+      <h2 class="section-title">Fetcher <span>Asincrono</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Programmazione Asincrona</strong> asyncio per gestire I/O concorrenti senza bloccare il thread principale, migliorando la responsività dell'applicazione.
+      <br></br>
+      <strong>- Coroutine</strong> Funzioni async def per operazioni non bloccanti, permettendo l'esecuzione parallela di task I/O-bound.
+      <br></br>
+      <strong>- Gather per Parallelismo</strong> asyncio.gather per eseguire fetch da multiple fonti contemporaneamente, riducendo il tempo totale di caricamento.
+      <br></br>
+      <strong>- Gestione Errori Asincrona</strong> Cattura e gestione degli errori specifici durante il fetch concorrente, mantenendo la stabilità del sistema.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">FetcherAsync</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
+        <span class="kw">self</span>.catalogo = catalogo
+
+    <span class="kw">async def</span> <span class="fn">_fetch_da_fonte</span>(<span class="kw">self</span>, fonte: Fonte):
+        <span class="str">"""Esegue l'estrazione dati simulando un'attesa I/O asincrona"""</span>
+        <span class="kw">if not</span> fonte.attiva: <span class="kw">return</span>
+        <span class="kw">try</span>:
+            <span class="kw">await</span> asyncio.sleep(0.5) <span class="cm"># Simulazione latenza di rete API</span>
+            articoli = fonte.fetch_articoli()
+            aggiunti = <span class="kw">self</span>.catalogo.aggiungi_articoli(articoli)
+            <span class="cls">print</span>(<span class="str">f"[ASYNC] Fonte '{fonte.nome}' ha restituito {aggiunti} articoli."</span>)
+        <span class="kw">except</span> <span class="cls">FonteNonRaggiungibileError</span> <span class="kw">as</span> e:
+            <span class="cls">print</span>(<span class="str">f"[ASYNC-ERR] {e}"</span>)
+
+    <span class="kw">async def</span> <span class="fn">esegui_fetch_massivo</span>(<span class="kw">self</span>):
+        <span class="str">"""Lancia contemporaneamente il fetch per tutte le fonti registrate."""</span>
+        tasks = []
+        <span class="kw">for</span> fonte <span class="kw">in self</span>.catalogo._fonti.values():
+            tasks.append(<span class="kw">self</span>._fetch_da_fonte(fonte))
+            
+        <span class="cm"># gather attende la risoluzione in parallelo di tutte le Coroutine</span>
+        <span class="kw">await</span> asyncio.gather(*tasks)</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s8" class="section">
+    <div class="section-header">
+      <span class="section-num">S8</span>
+      <h2 class="section-title">Thread di <span>Monitoraggio</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Multithreading</strong> threading per eseguire monitoraggio in background senza bloccare l'UI, permettendo operazioni simultanee.
+      <br></br>
+      <strong>- Daemon Thread</strong> Thread daemon che termina automaticamente con il programma, evitando risorse orfane.
+      <br></br>
+      <strong>- Sincronizzazione</strong> Lock per evitare race conditions, Event per shutdown graceful, garantendo thread safety.
+      <br></br>
+      <strong>- Loop di Monitoraggio</strong> Ciclo continuo con timeout per controlli periodici senza consumo eccessivo di CPU, bilanciando efficienza e reattività.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">ThreadMonitoraggio</span>(threading.Thread):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
+        <span class="kw">super</span>().<span class="fn">__init__</span>(daemon=<span class="kw">True</span>)
+        <span class="kw">self</span>.catalogo = catalogo
+        <span class="kw">self</span>._stop_event = threading.Event()
+        <span class="kw">self</span>._lock = threading.Lock()
+
+    <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>):
+        <span class="str">"""Metodo invocato quando il thread fa 'start()'"""</span>
+        <span class="kw">while not self</span>._stop_event.is_set():
+            <span class="cm"># Sleep interrotta preventivamente se scatta l'evento</span>
+            <span class="kw">self</span>._stop_event.wait(timeout=5.0) 
+            <span class="kw">if self</span>._stop_event.is_set():
+                <span class="kw">break</span>
+
+            <span class="cm"># Simulazione rilevamento nuovo articolo (esegui in Safe-Zone)</span>
+            <span class="kw">with self</span>._lock:
+                <span class="cm"># Esegue la logica senza entrare in conflitto col main loop</span>
+                <span class="kw">pass</span>
+                
+    <span class="kw">def</span> <span class="fn">ferma</span>(<span class="kw">self</span>):
+        <span class="str">"""Segnala al thread di interrompersi pulitamente."""</span>
+        <span class="kw">self</span>._stop_event.set()</code></pre></div>
+    </div>
+  </section>
+
+  <section id="s9" class="section">
+    <div class="section-header">
+      <span class="section-num">S9</span>
+      <h2 class="section-title">L'App <span>PulseNews</span></h2>
+    </div>
+    <p class="theory-text">
+      <strong>Argomenti Principali:</strong>
+      <br></br>
+      <strong>- Controller Pattern</strong> PulseNews orchestra i componenti e gestisce l'interazione utente, fungendo da punto centrale dell'architettura.
+      <br></br>
+      <strong>- Event Loop Asincrono</strong> asyncio.run per il caricamento iniziale, integrando operazioni sincrone e asincrone.
+      <br></br>
+      <strong>- Menu Interattivo</strong> Loop sincrono per input utente mentre thread girano in background, fornendo un'interfaccia testuale semplice.
+      <br></br>
+      <strong>- Integrazione Componenti</strong> Collegamento tra Catalogo, Cercatore, Fetcher e Thread per un funzionamento coeso e modulare dell'applicazione.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
+      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">PulseNews</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>._catalogo = Catalogo()
+        <span class="kw">self</span>._cercatore = Cercatore(<span class="kw">self</span>._catalogo)
+        <span class="kw">self</span>._thread_monitoraggio = <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">avvia</span>(<span class="kw">self</span>):
+        <span class="cls">print</span>(<span class="str">" Inizializzazione applicazione..."</span>)
+        <span class="cm"># ... Popolamento Fonti omesse per brevità ...</span>
+
+        <span class="cm"># 1. Avvio Event Loop Asincrono per il primo caricamento dati pesante</span>
+        fetcher = FetcherAsync(<span class="kw">self</span>._catalogo)
+        asyncio.run(fetcher.esegui_fetch_massivo())
+
+        <span class="cm"># 2. Avvio worker thread in background</span>
+        <span class="kw">self</span>._thread_monitoraggio = ThreadMonitoraggio(<span class="kw">self</span>._catalogo)
+        <span class="kw">self</span>._thread_monitoraggio.start()
+
+        <span class="cm"># 3. Main Loop Sincrono per interazione utente</span>
+        <span class="kw">self</span>.menu_interattivo()
+        
+    <span class="kw">def</span> <span class="fn">menu_interattivo</span>(<span class="kw">self</span>):
+        <span class="kw">while True</span>:
+            scelta = <span class="cls">input</span>(<span class="str">"\nScegli un'opzione (es. 0 per uscire) > "</span>)
+            <span class="kw">if</span> scelta == <span class="str">"0"</span>:
+                <span class="kw">self</span>._thread_monitoraggio.ferma()
+                <span class="kw">self</span>._thread_monitoraggio.join()
+                <span class="cls">print</span>(<span class="str">"Chiusura. Arrivederci!"</span>)
+                <span class="kw">break</span></code></pre></div>
+    </div>
+  </section>
+
+  <section id="live" class="section">
+    <div class="section-header">
+      <span class="section-num">▶</span>
+      <h2 class="section-title">Demo <span>Live Finale</span></h2>
+    </div>
+    <p class="theory-text">
+      Questa simulazione rappresenta esattamente cosa accade nel tuo terminale avviando il file <code>pulsenews_main.py</code>, dimostrando il menu interattivo e le operazioni in tempo reale.
+    </p>
+    <div class="demo-container">
+      <div class="demo-toolbar">
+        <span class="demo-title">pulsenews_main.py — Menu Interattivo</span>
+        <button id="btnStart" class="demo-btn" onclick="avviaApp()">Avvia PulseNews</button>
+        <div id="menuButtons" style="display:none;">
+          <button class="demo-btn" onclick="sceltaMenu('1')">1. Aggiorna Catalogo</button>
+          <button class="demo-btn" onclick="sceltaMenu('2')">2. Ricerca Avanzata</button>
+          <button class="demo-btn" onclick="sceltaMenu('3')">3. Analisi Corpus</button>
+          <button class="demo-btn" onclick="sceltaMenu('4')">4. Info Catalogo</button>
+          <button class="demo-btn" onclick="sceltaMenu('5')">5. Gestione Fonti</button>
+          <button class="demo-btn" onclick="sceltaMenu('6')">6. Monitoraggio</button>
+          <button class="demo-btn" onclick="sceltaMenu('7')">7. Esporta</button>
+          <button class="demo-btn" onclick="sceltaMenu('8')">8. Storico</button>
+          <button class="demo-btn red" onclick="sceltaMenu('0')">0. Esci</button>
+        </div>
+      </div>
+      <div id="demoMonitor" class="demo-screen"></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Menu Highlighter
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('section');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (pageYOffset >= (sectionTop - section.clientHeight / 3)) {
+        current = section.getAttribute('id');
+      }
+    });
+    navItems.forEach(item => {
+      item.classList.remove('active');
+      if (item.getAttribute('href').includes(current)) {
+        item.classList.add('active');
+      }
+    });
+  });
+
+  // ====== LOGICA DEMO INTERATTIVA ======
+  
+  // Funzione per stampare le righe ritardate nel tempo
+  async function printLine(containerId, textHtml, delayMs = 0) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const span = document.createElement('span');
+        span.className = 'out-line';
+        span.innerHTML = textHtml;
+        el.appendChild(span);
+        el.scrollTop = el.scrollHeight;
+        resolve();
+      }, delayMs);
+    });
+  }
+
+  let appStarted = false;
+  let monitoraggioAttivo = false;
+  let monitorInterval;
+  let articoliCount = 0;
+
+  async function avviaApp() {
+    if (appStarted) return;
+    appStarted = true;
+    
+    document.getElementById('demoMonitor').innerHTML = '';
+    document.getElementById('btnStart').style.display = 'none';
+    document.getElementById('menuButtons').style.display = 'flex';
+    
+    await printLine('demoMonitor', '<span class="out-info"> Benvenuto in PulseNews!</span>', 200);
+    await printLine('demoMonitor', '<span class="out-dim">>> Caricamento fonti da config...</span>', 400);
+    await printLine('demoMonitor', '<span class="out-ok">>> Fonti caricate: TechItalia, EconomiaOggi, ScienzaNow</span>', 200);
+    mostraMenu();
+  }
+
+  async function mostraMenu() {
+    await printLine('demoMonitor', '', 100);
+    await printLine('demoMonitor', '<span class="out-info">========================================================</span>', 0);
+    await printLine('demoMonitor', '<span class="out-info">   PULSENEWS — Aggregatore di Notizie</span>', 0);
+    await printLine('demoMonitor', '<span class="out-info">========================================================</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  1.  Aggiorna catalogo (fetch da tutte le fonti)</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  2.   Ricerca avanzata con regex</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  3.  Analisi del corpus</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  4.  Mostra info catalogo</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  5.  Gestione fonti</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  6.  Attiva/Disattiva monitoraggio background</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  7.  Esporta catalogo (JSON/CSV)</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  8.  Storico ricerche</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim">  0.  Esci</span>', 0);
+    await printLine('demoMonitor', '<span class="out-info">========================================================</span>', 0);
+    await printLine('demoMonitor', '<span class="out-dim"> Scelta: </span>', 0);
+  }
+
+  async function sceltaMenu(scelta) {
+    await printLine('demoMonitor', `<span class="out-bold">${scelta}</span>`, 0);
+    
+    if (scelta === '1') {
+      await aggiornaCatalogo();
+    } else if (scelta === '2') {
+      await ricercaAvanzata();
+    } else if (scelta === '3') {
+      await analisiCorpus();
+    } else if (scelta === '4') {
+      await infoCatalogo();
+    } else if (scelta === '5') {
+      await gestioneFonti();
+    } else if (scelta === '6') {
+      await toggleMonitoraggio();
+    } else if (scelta === '7') {
+      await esportaCatalogo();
+    } else if (scelta === '8') {
+      await storicoRicerche();
+    } else if (scelta === '0') {
+      await esciApp();
+    }
+    
+    if (scelta !== '0') {
+      setTimeout(mostraMenu, 1000);
+    }
+  }
+
+  async function aggiornaCatalogo() {
+    await printLine('demoMonitor', '<span class="out-dim">>> Aggiornamento catalogo in corso...</span>', 200);
+    await printLine('demoMonitor', '<span class="out-dim">>> [ASYNC] Fetch da TechItalia...</span>', 400);
+    await printLine('demoMonitor', '<span class="out-ok">>> [ASYNC] TechItalia: +5 articoli</span>', 300);
+    await printLine('demoMonitor', '<span class="out-dim">>> [ASYNC] Fetch da EconomiaOggi...</span>', 200);
+    await printLine('demoMonitor', '<span class="out-ok">>> [ASYNC] EconomiaOggi: +3 articoli</span>', 300);
+    await printLine('demoMonitor', '<span class="out-dim">>> [ASYNC] Fetch da ScienzaNow...</span>', 200);
+    await printLine('demoMonitor', '<span class="out-err">>> [ASYNC] ScienzaNow: Errore - Saltata</span>', 300);
+    articoliCount += 8;
+    await printLine('demoMonitor', `<span class="out-bold out-info">>> Catalogo aggiornato: +8 articoli. Totale: ${articoliCount}</span>`, 200);
+  }
+
+  async function ricercaAvanzata() {
+    await printLine('demoMonitor', '<span class="out-dim">Inserisci espressione regolare di ricerca: </span>', 0);
+    await printLine('demoMonitor', '<span class="out-bold">tecnologia</span>', 500);
+    await printLine('demoMonitor', '<span class="out-ok">>> Trovati 3 articoli.</span>', 200);
+    await printLine('demoMonitor', '<span class="out-dim"> - [0.8] Nuovo smartphone rivoluzionario</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim"> - [0.7] Intelligenza artificiale nel tech</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim"> - [0.6] Innovazioni tecnologiche 2026</span>', 100);
+  }
+
+  async function analisiCorpus() {
+    await printLine('demoMonitor', '<span class="out-dim">>> Analisi del corpus in corso...</span>', 300);
+    await printLine('demoMonitor', '<span class="out-info">--- STATISTICHE CORPUS ---</span>', 200);
+    await printLine('demoMonitor', `<span class="out-dim">Totale Articoli: ${articoliCount}</span>`, 100);
+    await printLine('demoMonitor', '<span class="out-dim">Parole più frequenti:</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">  - tecnologia: 12</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">  - economia: 8</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">  - scienza: 5</span>', 100);
+  }
+
+  async function infoCatalogo() {
+    await printLine('demoMonitor', `<span class="out-info">>> Info Catalogo: ${articoliCount} articoli totali</span>`, 200);
+    await printLine('demoMonitor', '<span class="out-dim">Fonti attive: TechItalia, EconomiaOggi</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">Monitoraggio: ' + (monitoraggioAttivo ? 'Attivo' : 'Disattivo') + '</span>', 100);
+  }
+
+  async function gestioneFonti() {
+    await printLine('demoMonitor', '<span class="out-dim">>> Gestione Fonti</span>', 200);
+    await printLine('demoMonitor', '<span class="out-dim">1. Mostra fonti</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">2. Attiva/Disattiva fonte</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">Fonti: TechItalia (attiva), EconomiaOggi (attiva), ScienzaNow (disattiva)</span>', 100);
+  }
+
+  async function toggleMonitoraggio() {
+    if (monitoraggioAttivo) {
+      monitoraggioAttivo = false;
+      clearInterval(monitorInterval);
+      await printLine('demoMonitor', '<span class="out-dim">ℹ Il monitoraggio è stato fermato.</span>', 200);
+    } else {
+      monitoraggioAttivo = true;
+      await printLine('demoMonitor', '<span class="out-ok"> Monitoraggio in background avviato (controllo ogni 10s).</span>', 200);
+      monitorInterval = setInterval(async () => {
+        if (!monitoraggioAttivo) return;
+        const now = new Date().toLocaleTimeString('it-IT');
+        const newArts = Math.floor(Math.random() * 3) + 1;
+        articoliCount += newArts;
+        await printLine('demoMonitor', `<span class="out-warn">🔔 [${now}] MONITORAGGIO: +${newArts} nuovi articoli! Totale: ${articoliCount}</span>`, 0);
+      }, 10000);
+    }
+  }
+
+  async function esportaCatalogo() {
+    await printLine('demoMonitor', '<span class="out-dim">>> Esportazione catalogo...</span>', 300);
+    await printLine('demoMonitor', '<span class="out-ok">>> Catalogo esportato in JSON e CSV.</span>', 200);
+  }
+
+  async function storicoRicerche() {
+    await printLine('demoMonitor', '<span class="out-dim">>> Storico Ricerche</span>', 200);
+    await printLine('demoMonitor', '<span class="out-dim">1. tecnologia - 3 risultati</span>', 100);
+    await printLine('demoMonitor', '<span class="out-dim">2. economia - 2 risultati</span>', 100);
+  }
+
+  async function esciApp() {
+    if (monitoraggioAttivo) {
+      await printLine('demoMonitor', '<span class="out-dim">>>> Fermando monitoraggio...</span>', 200);
+      monitoraggioAttivo = false;
+      clearInterval(monitorInterval);
+    }
+    await printLine('demoMonitor', '<span class="out-dim">Chiusura del programma...</span>', 300);
+    await printLine('demoMonitor', '<span class="out-err">Arrivederci!</span>', 200);
+    // Reset
+    appStarted = false;
+    monitoraggioAttivo = false;
+    articoliCount = 0;
+    document.getElementById('btnStart').style.display = 'inline-block';
+    document.getElementById('menuButtons').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
