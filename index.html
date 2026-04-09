@@ -190,15 +190,17 @@ body {
       <h2 class="section-title">Eccezioni <span>Personalizzate</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il sistema di gestione degli errori personalizzati dell'applicazione PulseNews, definendo una gerarchia di eccezioni specifiche per gestire situazioni di errore particolari come query non valide o fonti non raggiungibili.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Ereditarietà da Exception</strong> Le eccezioni personalizzate ereditano dalla classe base Exception, mantenendo compatibilità con il sistema di gestione errori di Python e permettendo l'uso di try/except standard.
+      <strong>- Ereditarietà da Exception</strong> Le eccezioni personalizzate ereditano dalla classe base Exception di Python, garantendo piena compatibilità con il sistema di gestione degli errori standard del linguaggio. Questo permette di utilizzare i blocchi try/except tradizionali senza modifiche al codice esistente, mantenendo la semantica attesa dagli sviluppatori.
       <br></br>
-      <strong>- Errori Specifici del Dominio</strong> Ogni eccezione rappresenta uno stato di errore particolare dell'applicazione PulseNews, migliorando la leggibilità e la manutenibilità del codice attraverso messaggi di errore contestualizzati.
+      <strong>- Errori Specifici del Dominio</strong> Ogni eccezione rappresenta un tipo di errore specifico legato alla logica dell'applicazione PulseNews, come problemi di caricamento fonti o query non valide. Questo approccio migliora significativamente la leggibilità del codice, poiché i nomi delle eccezioni comunicano chiaramente il contesto dell'errore, facilitando la manutenzione e il debugging.
       <br></br>
-      <strong>- Gestione Gerarchica</strong> Utilizzo di una gerarchia di eccezioni con PulseNewsError come base, permettendo catch selettivi e una gestione modulare degli errori in diversi livelli dell'applicazione.
+      <strong>- Gestione Gerarchica degli Errori</strong> Viene implementata una gerarchia di eccezioni con PulseNewsError come classe base astratta. Questa struttura permette di catturare errori in modo selettivo: ad esempio, è possibile catturare tutti gli errori di PulseNews con un singolo except PulseNewsError, oppure gestire sottotipi specifici come QueryNonValidaError separatamente, abilitando una gestione modulare e granulare degli errori attraverso i diversi livelli dell'applicazione.
       <br></br>
-      <strong>- Messaggi Informativi</strong> Le eccezioni includono messaggi dettagliati per facilitare il debugging e la comprensione del problema, fornendo informazioni utili per la risoluzione.
+      <strong>- Messaggi Informativi e Contestualizzati</strong> Le eccezioni includono messaggi di errore dettagliati e informativi che forniscono contesto specifico sull'errore avvenuto. Questi messaggi aiutano gli sviluppatori durante il debugging, indicando non solo che si è verificato un errore, ma anche quale operazione stava fallendo e suggerendo possibili cause, accelerando la risoluzione dei problemi.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
@@ -231,29 +233,33 @@ body {
       <h2 class="section-title">Modello <span>Articolo</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione definisce il modello di dati Articolo, che rappresenta una singola notizia nell'applicazione PulseNews, incapsulando tutte le informazioni rilevanti come titolo, contenuto, autore, fonte e data di pubblicazione.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- DTO Pattern</strong> La classe Articolo incapsula i dati di una notizia in un oggetto strutturato, facilitando il passaggio e la manipolazione dei dati nell'applicazione senza usare dizionari caotici, migliorando la type safety.
+      <strong>- Pattern DTO (Data Transfer Object)</strong> La classe Articolo funge da contenitore strutturato per i dati di una notizia, incapsulando tutte le proprietà rilevanti (titolo, corpo, autore, ecc.) in un singolo oggetto. Questo approccio evita l'uso di dizionari caotici o tuple, migliorando la type safety e rendendo il codice più espressivo e meno soggetto a errori.
       <br></br>
-      <strong>- Property e Validazione</strong> Utilizzo di @property per titolo con setter che valida l'input, prevenendo titoli vuoti o invalidi attraverso eccezioni e garantendo l'integrità dei dati.
+      <strong>- Proprietà con Validazione</strong> Utilizzo del decoratore @property per il titolo con un setter personalizzato che valida l'input in ingresso. Se il titolo è vuoto o composto solo da spazi, viene sollevata una ValueError, prevenendo la creazione di articoli invalidi e garantendo l'integrità dei dati fin dalla loro creazione.
       <br></br>
-      <strong>- Uguaglianza Personalizzata</strong> Override di __eq__ per definire l'uguaglianza basata su titolo e fonte, essenziale per gestire duplicati nel Catalogo e ottimizzare le operazioni di set.
+      <strong>- Uguaglianza Personalizzata per Duplicati</strong> Override del metodo __eq__ per definire l'uguaglianza tra articoli basata esclusivamente su titolo e fonte. Questo è essenziale per gestire duplicati nel Catalogo: due articoli con stesso titolo dalla stessa fonte sono considerati identici, permettendo l'uso efficiente di strutture dati come set() per evitare ridondanze.
       <br></br>
-      <strong>- Serializzazione JSON</strong> Metodo to_dict per convertire l'oggetto in dizionario, compatibile con JSON per salvataggio o trasmissione dati, semplificando l'interfaccia con fonti esterne.
+      <strong>- Serializzazione JSON Compatibile</strong> Il metodo to_dict() converte l'oggetto Articolo in un dizionario Python standard, compatibile con la serializzazione JSON. Questo facilita l'interfaccia con fonti esterne di dati, il salvataggio su file o la trasmissione via rete, semplificando l'integrazione con API esterne.
       <br></br>
-      <strong>- Gestione Temporale</strong> Conversione automatica della data da stringa ISO a oggetto datetime per operazioni di confronto, ordinamento e filtri temporali, utilizzando la libreria standard datetime.
+      <strong>- Gestione Temporale Intelligente</strong> La data di pubblicazione viene automaticamente convertita da stringa ISO 8601 a oggetto datetime durante l'inizializzazione, sfruttando il modulo datetime della libreria standard. Questo permette operazioni di confronto cronologico, ordinamento temporale e filtri basati su date senza conversioni manuali.
       <br></br>
-      <strong>- Attributi Opzionali</strong> Supporto per tags come lista dinamica e rilevanza come punteggio float, con valori di default per flessibilità e personalizzazione delle notizie.
+      <strong>- Attributi Opzionali e Flessibili</strong> Supporto per attributi dinamici come tags (lista di stringhe) e rilevanza (punteggio float), con valori di default appropriati. Questo permette personalizzazioni avanzate delle notizie, come categorizzazione tramite tag o ranking basato su rilevanza, mantenendo la flessibilità necessaria per diverse fonti di dati.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Articolo</span>:
+      <div class="code-body"><pre><code><span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">class</span> <span class="cls">Articolo</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, id: <span class="cls">str</span>, titolo: <span class="cls">str</span>, corpo: <span class="cls">str</span>, autore: <span class="cls">str</span>,
                  fonte: <span class="cls">str</span>, data_pubblicazione: <span class="cls">str</span>, categoria: <span class="cls">str</span>,
                  tags: <span class="cls">list</span> = <span class="kw">None</span>, rilevanza: <span class="cls">float</span> = 0.5):
         <span class="kw">self</span>._id = id
         <span class="kw">self</span>.titolo = titolo  <span class="cm"># Chiama il setter per la validazione</span>
-        <span class="kw">self</span>.corpo = corpo    <span class="cm"># Chiama il setter per la validazione</span>
+        <span class="kw">self</span>._corpo = corpo
         <span class="kw">self</span>._autore = autore
         <span class="kw">self</span>._fonte = fonte
         <span class="kw">self</span>._data_pubblicazione = datetime.fromisoformat(data_pubblicazione)
@@ -271,6 +277,26 @@ body {
             <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Il titolo non può essere vuoto."</span>)
         <span class="kw">self</span>._titolo = valore
 
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">corpo</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._corpo
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">autore</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._autore
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">fonte</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._fonte
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">data_pubblicazione</span>(<span class="kw">self</span>) -> datetime:
+        <span class="kw">return self</span>._data_pubblicazione
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">categoria</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._categoria
+
     <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, altro):
         <span class="str">"""Due articoli sono uguali se hanno stesso titolo E stessa fonte"""</span>
         <span class="kw">if not isinstance</span>(altro, Articolo):
@@ -280,11 +306,31 @@ body {
     <span class="kw">def</span> <span class="fn">to_dict</span>(<span class="kw">self</span>) -> <span class="cls">dict</span>:
         <span class="str">"""Serializza l'articolo in un dizionario JSON-friendly."""</span>
         <span class="kw">return</span> {
-            <span class="str">"id"</span>: <span class="kw">self</span>.id,
+            <span class="str">"id"</span>: <span class="kw">self</span>._id,
             <span class="str">"titolo"</span>: <span class="kw">self</span>.titolo,
+            <span class="str">"corpo"</span>: <span class="kw">self</span>.corpo,
+            <span class="str">"autore"</span>: <span class="kw">self</span>.autore,
+            <span class="str">"fonte"</span>: <span class="kw">self</span>.fonte,
             <span class="str">"data_pubblicazione"</span>: <span class="kw">self</span>.data_pubblicazione.isoformat(),
-            <span class="str">"categoria"</span>: <span class="kw">self</span>.categoria
-        }</code></pre></div>
+            <span class="str">"categoria"</span>: <span class="kw">self</span>.categoria,
+            <span class="str">"tags"</span>: <span class="kw">self</span>.tags,
+            <span class="str">"rilevanza"</span>: <span class="kw">self</span>.rilevanza
+        }
+
+    <span class="kw">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_dict</span>(<span class="kw">cls</span>, data: <span class="cls">dict</span>) -> <span class="str">'Articolo'</span>:
+        <span class="str">"""Crea un Articolo da un dizionario."""</span>
+        <span class="kw">return cls</span>(
+            id=data[<span class="str">"id"</span>],
+            titolo=data[<span class="str">"titolo"</span>],
+            corpo=data.get(<span class="str">"corpo"</span>, <span class="str">""</span>),
+            autore=data.get(<span class="str">"autore"</span>, <span class="str">"Sconosciuto"</span>),
+            fonte=data.get(<span class="str">"fonte"</span>, <span class="str">"Fonte sconosciuta"</span>),
+            data_pubblicazione=data[<span class="str">"data_pubblicazione"</span>],
+            categoria=data[<span class="str">"categoria"</span>],
+            tags=data.get(<span class="str">"tags"</span>, []),
+            rilevanza=data.get(<span class="str">"rilevanza"</span>, 0.5)
+        )</code></pre></div>
     </div>
   </section>
 
@@ -294,32 +340,53 @@ body {
       <h2 class="section-title">Gestione <span>Fonti</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il sistema di gestione delle fonti di dati, permettendo all'applicazione PulseNews di caricare articoli da diverse origini come file JSON, API REST o database, attraverso un'architettura estensibile e uniforme.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Principio Aperto/Chiuso</strong> L'architettura permette l'estensione con nuove fonti senza modificare il codice esistente, grazie all'ereditarietà, seguendo i principi SOLID per un design scalabile.
+      <strong>- Principio Aperto/Chiuso (SOLID)</strong> L'architettura del sistema di fonti segue il principio Open/Closed: è possibile estendere il sistema aggiungendo nuove fonti (come API REST o database) senza modificare il codice esistente. Questo viene realizzato attraverso l'ereditarietà, dove nuove classi Fonte concrete ereditano da Fonte astratta, garantendo un design scalabile e modulare.
       <br></br>
-      <strong>- Classi Astratte (ABC)</strong> La classe Fonte impone l'implementazione del metodo fetch_articoli() nelle sottoclassi concrete, garantendo un'interfaccia uniforme.
+      <strong>- Classi Astratte e Interfacce Uniformi</strong> La classe Fonte è definita come classe astratta utilizzando il modulo abc (Abstract Base Classes). Questo impone alle sottoclassi di implementare il metodo fetch_articoli(), garantendo un'interfaccia uniforme. Ogni fonte, indipendentemente dal tipo (JSON, API, database), espone lo stesso contratto pubblico.
       <br></br>
-      <strong>- Polimorfismo</strong> Diverse fonti (JSON, API, ecc.) implementano fetch_articoli() in modi specifici, trattate uniformemente dal Catalogo attraverso riferimenti alla classe base.
+      <strong>- Polimorfismo e Trattamento Uniforme</strong> Diverse implementazioni di fonti (FonteJSON, FonteAPI, ecc.) possono essere trattate in modo polimorfico attraverso riferimenti alla classe base Fonte. Il Catalogo può iterare su una collezione di fonti eterogenee e chiamare fetch_articoli() senza conoscere i dettagli implementativi, semplificando il codice client.
       <br></br>
-      <strong>- Gestione Stato</strong> Attributo 'attiva' per abilitare/disabilitare fonti dinamicamente senza rimuoverle, permettendo configurazioni flessibili dell'applicazione.
+      <strong>- Gestione Dinamica dello Stato</strong> Ogni fonte ha un attributo 'attiva' booleano che permette di abilitare o disabilitare dinamicamente la fonte senza rimuoverla dalla configurazione. Questo è utile per manutenzione (disabilitare fonti temporaneamente non funzionanti) o personalizzazione (consentendo all'utente di scegliere quali fonti utilizzare).
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Fonte</span>(ABC):
+      <div class="code-body"><pre><code><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+<span class="kw">import</span> json
+
+<span class="kw">class</span> <span class="cls">Fonte</span>(ABC):
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome: <span class="cls">str</span>, url: <span class="cls">str</span>, categoria_default: <span class="cls">str</span>, attiva: <span class="cls">bool</span> = <span class="kw">True</span>):
         <span class="kw">self</span>._nome = nome
         <span class="kw">self</span>._url = url
         <span class="kw">self</span>._categoria_default = categoria_default
         <span class="kw">self</span>._attiva = attiva
 
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">nome</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._nome
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">url</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._url
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">categoria_default</span>(<span class="kw">self</span>) -> <span class="cls">str</span>:
+        <span class="kw">return self</span>._categoria_default
+
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">attiva</span>(<span class="kw">self</span>) -> <span class="cls">bool</span>:
+        <span class="kw">return self</span>._attiva
+
     <span class="kw">@abstractmethod</span>
     <span class="kw">def</span> <span class="fn">fetch_articoli</span>(<span class="kw">self</span>) -> <span class="cls">list</span>:
         <span class="kw">pass</span>
 
 <span class="kw">class</span> <span class="cls">FonteJSON</span>(Fonte):
-    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, url, cat, percorso_file, attiva=<span class="kw">True</span>):
-        <span class="kw">super</span>().<span class="fn">__init__</span>(nome, url, cat, attiva)
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, url, categoria_default, percorso_file, attiva=<span class="kw">True</span>):
+        <span class="kw">super</span>().<span class="fn">__init__</span>(nome, url, categoria_default, attiva)
         <span class="kw">self</span>._percorso_file = percorso_file
 
     <span class="kw">def</span> <span class="fn">fetch_articoli</span>(<span class="kw">self</span>) -> <span class="cls">list</span>:
@@ -328,7 +395,7 @@ body {
                 dati_grezzi = json.load(f)
                 articoli_list = []
                 <span class="kw">for</span> item <span class="kw">in</span> dati_grezzi.get(<span class="str">"articoli"</span>, []):
-                    articolo = Articolo.from_dict(item, <span class="kw">self</span>.nome)
+                    articolo = Articolo.from_dict(item)
                     articoli_list.append(articolo)
                 <span class="kw">return</span> articoli_list
         <span class="kw">except</span> (<span class="cls">FileNotFoundError</span>, json.<span class="cls">JSONDecodeError</span>) <span class="kw">as</span> e:
@@ -342,19 +409,23 @@ body {
       <h2 class="section-title">Sistema di <span>Filtri</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il sistema di filtri per articoli, permettendo di selezionare e restringere i risultati del catalogo in base a criteri specifici come categoria, data di pubblicazione o altri attributi, utilizzando approcci funzionali e concatenabili.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Programmazione Funzionale</strong> Uso di funzioni lambda e built-in come filter() per applicare criteri di filtraggio in modo dichiarativo, evitando cicli imperativi.
+      <strong>- Programmazione Funzionale</strong> Il sistema di filtri sfrutta paradigmi funzionali di Python, utilizzando funzioni lambda anonime e built-in come filter() per applicare criteri di filtraggio in modo dichiarativo. Invece di cicli imperativi che modificano liste in-place, si utilizzano espressioni che descrivono "cosa" filtrare piuttosto che "come" farlo, rendendo il codice più conciso e meno soggetto a errori.
       <br></br>
-      <strong>- Concatenazione di Filtri</strong> Possibilità di applicare più filtri in sequenza, concatenandoli elegantemente, per query complesse senza codice ripetitivo.
+      <strong>- Concatenazione e Composizione di Filtri</strong> È possibile applicare più filtri in sequenza attraverso il metodo applica_filtri(), che prende una lista di funzioni filtro e le applica una dopo l'altra. Questo permette di comporre filtri complessi: ad esempio, filtrare prima per categoria, poi per data, poi per autore, creando pipeline di trasformazione dati flessibili e riutilizzabili.
       <br></br>
-      <strong>- Criteri Dinamici</strong> I filtri possono essere passati come argomenti, permettendo flessibilità nell'interrogazione e personalizzazione runtime.
+      <strong>- Criteri Dinamici e Runtime</strong> I filtri possono essere passati come argomenti a funzioni, permettendo di definire la logica di filtraggio dinamicamente durante l'esecuzione. Questo è particolarmente utile per interfacce utente dove l'utente può scegliere criteri arbitrari, o per sistemi di configurazione dove i filtri vengono letti da file di configurazione.
       <br></br>
-      <strong>- Metodi Statici</strong> Tutti i metodi sono statici per un uso stateless e modulare del sistema di filtri, facilitando il testing e il riutilizzo.
+      <strong>- Metodi Statici e Design Stateless</strong> Tutti i metodi della classe Filtri sono statici, eliminando la necessità di istanziare oggetti e rendendo il sistema stateless. Questo facilita il testing (non c'è stato da gestire), il riutilizzo (chiamate dirette senza setup) e la composizione (filtri possono essere passati come funzioni pure senza dipendenze nascoste).
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Filtri</span>:
+      <div class="code-body"><pre><code><span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">class</span> <span class="cls">Filtri</span>:
     <span class="str">"""Collezione di metodi statici per filtrare liste di articoli."""</span>
 
     <span class="kw">@staticmethod</span>
@@ -382,19 +453,24 @@ body {
       <h2 class="section-title">Analizzatore <span>Testuale</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa l'analizzatore testuale che estrae e analizza le parole chiave più significative dal contenuto degli articoli, utilizzando tecniche di elaborazione del linguaggio naturale per identificare temi e argomenti principali.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Espressioni Regolari (Regex)</strong> Utilizzo di re.findall per estrarre parole alfabetiche dal testo, rimuovendo punteggiatura e caratteri speciali per un'analisi pulita.
+      <strong>- Espressioni Regolari Avanzate</strong> Utilizzo del modulo re di Python per estrarre parole alfabetiche dal testo attraverso re.findall() con pattern complessi. Il pattern r"\b[a-zA-Zàèéìòù]{4,}\b" identifica parole di almeno 4 caratteri, escludendo numeri, punteggiatura e caratteri speciali, fornendo una base pulita per l'analisi testuale.
       <br></br>
-      <strong>- Rimozione Stop-Words</strong> Filtro funzionale per escludere parole comuni inutili, migliorando la qualità delle keyword e riducendo il rumore nei risultati.
+      <strong>- Rimozione Stop-Words Intelligente</strong> Implementazione di un filtro funzionale per escludere parole comuni (stop words) come articoli, preposizioni e congiunzioni che non aggiungono significato semantico. Questo migliora drasticamente la qualità delle keyword estratte, concentrandosi sui termini più rilevanti e riducendo il rumore nelle analisi statistiche.
       <br></br>
-      <strong>- Conteggio Frequenze</strong> Classe Counter per calcolare le occorrenze e restituire le top keyword, sfruttando strutture dati efficienti per prestazioni ottimali.
+      <strong>- Conteggio Frequenze con Counter</strong> Utilizzo della classe Counter dalla libreria collections per calcolare automaticamente le occorrenze delle parole. Questa struttura dati efficiente fornisce il metodo most_common() per estrarre le top N parole più frequenti, ottimizzando le prestazioni per analisi su grandi volumi di testo senza implementazioni manuali.
       <br></br>
-      <strong>- Pulizia Testo</strong> Rimozione di URL e caratteri non alfanumerici per un'analisi più accurata, utilizzando regex per pattern complessi.
+      <strong>- Pulizia Testo Completa</strong> Applicazione di regex per rimuovere URL (r"http\S+|www\S+") e caratteri non alfanumerici prima dell'analisi. Questo garantisce che l'estrazione delle keyword sia basata solo sul contenuto testuale significativo, escludendo elementi tecnici come link o markup che potrebbero distorcere i risultati.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Analizzatore</span>:
+      <div class="code-body"><pre><code><span class="kw">import</span> re
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+<span class="kw">class</span> <span class="cls">Analizzatore</span>:
     STOP_WORDS = {<span class="str">"il"</span>, <span class="str">"la"</span>, <span class="str">"e"</span>, <span class="str">"di"</span>, <span class="str">"in"</span>, <span class="str">"per"</span>, <span class="str">"con"</span>, <span class="str">"su"</span>, <span class="str">"un"</span>, <span class="str">"una"</span>}
 
     <span class="kw">@staticmethod</span>
@@ -420,19 +496,23 @@ body {
       <h2 class="section-title">Motore <span>Cercatore</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il motore di ricerca che permette agli utenti di trovare articoli specifici nel catalogo utilizzando query basate su espressioni regolari, con supporto per ordinamento e tracciamento delle ricerche effettuate.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- List Comprehensions</strong> Sintassi concisa per filtrare articoli che matchano la regex query, combinando filtri e trasformazioni in una singola espressione.
+      <strong>- List Comprehensions per Filtraggio Efficiente</strong> Sintassi concisa delle list comprehensions per filtrare articoli che corrispondono alla query regex in una singola espressione. Questa costrutto combina generazione di lista, condizione di filtro e trasformazione in modo elegante, sostituendo cicli for multi-riga con espressioni più leggibili e performanti.
       <br></br>
-      <strong>- Regex Search</strong> re.search per ricerche case-insensitive nel titolo e corpo degli articoli, supportando pattern complessi per query avanzate.
+      <strong>- Ricerca Regex Case-Insensitive</strong> Utilizzo di re.search() con flag re.IGNORECASE per ricerche testuali flessibili che non distinguono maiuscole/minuscole. Questo permette query più user-friendly, dove "Tecnologia" trova anche "tecnologia" o "TECNOLOGIA", migliorando l'usabilità senza sacrificare precisione.
       <br></br>
-      <strong>- Ordinamento Dinamico</strong> sorted() con key lambda per ordinare per data o altri criteri, permettendo ordinamenti personalizzati senza codice aggiuntivo.
+      <strong>- Ordinamento Dinamico per Criteri Multipli</strong> Funzione sorted() con parametro key basato su lambda functions per ordinare risultati per data, rilevanza o altri attributi. Questo approccio permette ordinamenti runtime personalizzati: decrescente per data (più recenti prima), crescente per rilevanza, o alfabetico per titolo, senza codice condizionale complesso.
       <br></br>
-      <strong>- Storico Ricerche</strong> Tracciamento delle query eseguite per analisi e ottimizzazioni future, memorizzando statistiche per migliorare le prestazioni.
+      <strong>- Tracciamento Storico delle Ricerche</strong> Memorizzazione automatica delle query eseguite con relativi conteggi di risultati in una lista interna. Questo storico permette analisi di utilizzo (query più popolari), ottimizzazioni delle prestazioni (cache per query frequenti) e debugging (tracciamento comportamenti utente).
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Cercatore</span>:
+      <div class="code-body"><pre><code><span class="kw">import</span> re
+
+<span class="kw">class</span> <span class="cls">Cercatore</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
         <span class="kw">self</span>._catalogo = catalogo
         <span class="kw">self</span>._storico_ricerche = []
@@ -464,19 +544,23 @@ body {
       <h2 class="section-title">Catalogo <span>Centrale</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il catalogo centrale che funge da repository principale per tutti gli articoli dell'applicazione, gestendo l'archiviazione, la prevenzione dei duplicati e l'accesso unificato ai dati provenienti da diverse fonti.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Singleton Pattern</strong> Il Catalogo è l'unica fonte di verità in memoria per gli articoli, centralizzando l'accesso ai dati.
+      <strong>- Pattern Singleton per Unicità</strong> Il Catalogo implementa implicitamente il pattern Singleton essendo l'unica fonte di verità per gli articoli in memoria. Tutti i componenti dell'applicazione (Cercatore, Fetcher, Filtri) accedono alla stessa istanza, garantendo consistenza dei dati e evitando duplicazioni o stati inconsistenti tra moduli diversi.
       <br></br>
-      <strong>- Set per Unicità</strong> Utilizzo di set() per garantire assenza di duplicati, basandosi su __eq__, ottimizzando le operazioni di inserimento.
+      <strong>- Set per Prevenzione Automatica Duplicati</strong> Utilizzo di un set() interno per memorizzare gli articoli, sfruttando l'uguaglianza personalizzata (__eq__) della classe Articolo basata su titolo+fonte. Questo garantisce automaticamente l'assenza di duplicati senza controlli manuali, ottimizzando le operazioni di inserimento e ricerca grazie alle proprietà matematiche dei set.
       <br></br>
-      <strong>- Gestione Fonti</strong> Registro delle fonti per fetch centralizzato, permettendo l'aggiunta dinamica di nuove fonti dati.
+      <strong>- Registro Fonti Centralizzato</strong> Mantenimento di un dizionario di fonti registrate per coordinare il fetch centralizzato. Ogni fonte è associata a un nome univoco, permettendo riferimenti diretti e gestione dinamica (aggiunta/rimozione fonti runtime) senza impatto sui componenti che le utilizzano.
       <br></br>
-      <strong>- Property Sicura</strong> Esposizione degli articoli come lista immutabile per proteggere l'integrità dei dati e prevenire modifiche accidentali.
+      <strong>- Property di Sicurezza per Incapsulamento</strong> Esposizione degli articoli attraverso una property che restituisce una lista immutabile (copia della lista interna). Questo protegge l'integrità del catalogo impedendo modifiche accidentali dall'esterno, mentre permette operazioni di lettura sicure e performanti.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">Catalogo</span>:
+      <div class="code-body"><pre><code><span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">class</span> <span class="cls">Articolo</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
         <span class="kw">self</span>._articoli = <span class="cls">set</span>()  <span class="cm"># Usiamo un Set per evitare duplicati in automatico</span>
         <span class="kw">self</span>._fonti = {}
@@ -503,19 +587,23 @@ body {
       <h2 class="section-title">Fetcher <span>Asincrono</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il fetcher asincrono che gestisce il caricamento parallelo degli articoli da multiple fonti di dati contemporaneamente, sfruttando la programmazione asincrona per migliorare le prestazioni e la responsività dell'applicazione.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Programmazione Asincrona</strong> asyncio per gestire I/O concorrenti senza bloccare il thread principale, migliorando la responsività dell'applicazione.
+      <strong>- Programmazione Asincrona con asyncio</strong> Utilizzo del modulo asyncio per gestire operazioni I/O concorrenti senza bloccare il thread principale. Le funzioni async def permettono di scrivere codice sequenziale che viene eseguito in modo non bloccante, migliorando la responsività dell'applicazione durante operazioni di rete intensive.
       <br></br>
-      <strong>- Coroutine</strong> Funzioni async def per operazioni non bloccanti, permettendo l'esecuzione parallela di task I/O-bound.
+      <strong>- Coroutine per Operazioni Non Bloccanti</strong> Implementazione di coroutine (funzioni async) per ogni fetch da fonte individuale. Ogni coroutine può sospendere l'esecuzione durante attese I/O (come letture da file o chiamate API), permettendo al loop di eventi di eseguire altre task contemporaneamente.
       <br></br>
-      <strong>- Gather per Parallelismo</strong> asyncio.gather per eseguire fetch da multiple fonti contemporaneamente, riducendo il tempo totale di caricamento.
+      <strong>- Parallelismo con asyncio.gather()</strong> Utilizzo di asyncio.gather() per lanciare contemporaneamente il fetch da multiple fonti. Invece di processare le fonti sequenzialmente (tempo totale = somma dei tempi), vengono eseguite in parallelo (tempo totale ≈ tempo della fonte più lenta), drasticamente riducendo i tempi di caricamento.
       <br></br>
-      <strong>- Gestione Errori Asincrona</strong> Cattura e gestione degli errori specifici durante il fetch concorrente, mantenendo la stabilità del sistema.
+      <strong>- Gestione Errori in Contesto Asincrono</strong> Cattura e gestione selettiva degli errori durante il fetch concorrente, mantenendo la stabilità del sistema. Errori in una fonte non bloccano le altre, e vengono loggati appropriatamente senza interrompere l'intero processo di caricamento dati.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">FetcherAsync</span>:
+      <div class="code-body"><pre><code><span class="kw">import</span> asyncio
+
+<span class="kw">class</span> <span class="cls">FetcherAsync</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
         <span class="kw">self</span>.catalogo = catalogo
 
@@ -547,19 +635,23 @@ body {
       <h2 class="section-title">Thread di <span>Monitoraggio</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione implementa il thread di monitoraggio che esegue controlli periodici in background per rilevare nuovi articoli o aggiornamenti dalle fonti, senza interferire con l'interazione utente principale.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Multithreading</strong> threading per eseguire monitoraggio in background senza bloccare l'UI, permettendo operazioni simultanee.
+      <strong>- Multithreading per Background Processing</strong> Utilizzo del modulo threading per eseguire il monitoraggio in un thread separato, permettendo operazioni continue in background senza bloccare l'interfaccia utente principale. Questo è essenziale per applicazioni interattive dove l'utente deve poter continuare a utilizzare il sistema mentre processi automatici sono attivi.
       <br></br>
-      <strong>- Daemon Thread</strong> Thread daemon che termina automaticamente con il programma, evitando risorse orfane.
+      <strong>- Thread Daemon per Pulizia Automatica</strong> Il thread di monitoraggio è configurato come daemon (daemon=True), garantendo che termini automaticamente quando il programma principale finisce. Questo evita thread orfani che potrebbero impedire la chiusura pulita dell'applicazione o consumare risorse dopo l'uscita.
       <br></br>
-      <strong>- Sincronizzazione</strong> Lock per evitare race conditions, Event per shutdown graceful, garantendo thread safety.
+      <strong>- Sincronizzazione con Lock e Event</strong> Implementazione di threading.Lock per proteggere sezioni critiche da race conditions, e threading.Event per coordinare l'avvio/arresto del thread. Questo garantisce thread safety: il lock previene accessi concorrenti ai dati condivisi, mentre l'Event permette shutdown graceful senza busy waiting.
       <br></br>
-      <strong>- Loop di Monitoraggio</strong> Ciclo continuo con timeout per controlli periodici senza consumo eccessivo di CPU, bilanciando efficienza e reattività.
+      <strong>- Loop di Monitoraggio Efficiente</strong> Ciclo while continuo con Event.wait(timeout) per controlli periodici senza consumo eccessivo di CPU. Invece di cicli busy che controllano costantemente, il thread dorme fino al timeout o alla segnalazione di stop, bilanciando reattività (controlli frequenti) con efficienza (basso utilizzo risorse).
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">ThreadMonitoraggio</span>(threading.Thread):
+      <div class="code-body"><pre><code><span class="kw">import</span> threading
+
+<span class="kw">class</span> <span class="cls">ThreadMonitoraggio</span>(threading.Thread):
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, catalogo):
         <span class="kw">super</span>().<span class="fn">__init__</span>(daemon=<span class="kw">True</span>)
         <span class="kw">self</span>.catalogo = catalogo
@@ -591,19 +683,23 @@ body {
       <h2 class="section-title">L'App <span>PulseNews</span></h2>
     </div>
     <p class="theory-text">
+      <strong>Descrizione Generale:</strong> Questa sezione rappresenta l'applicazione principale PulseNews che coordina tutti i componenti del sistema, fornendo un'interfaccia utente interattiva per gestire il catalogo, effettuare ricerche e monitorare l'attività in tempo reale.
+      <br></br>
       <strong>Argomenti Principali:</strong>
       <br></br>
-      <strong>- Controller Pattern</strong> PulseNews orchestra i componenti e gestisce l'interazione utente, fungendo da punto centrale dell'architettura.
+      <strong>- Pattern Controller per Orchestrazione</strong> La classe PulseNews funge da controller principale, orchestrando l'interazione tra tutti i componenti (Catalogo, Cercatore, Fetcher, Thread). Centralizza la logica di business e coordina le operazioni, fungendo da punto di ingresso unico per l'utente e garantendo un flusso di dati coerente attraverso l'applicazione.
       <br></br>
-      <strong>- Event Loop Asincrono</strong> asyncio.run per il caricamento iniziale, integrando operazioni sincrone e asincrone.
+      <strong>- Event Loop Asincrono per Inizializzazione</strong> Utilizzo di asyncio.run() per eseguire il caricamento iniziale dei dati in modo asincrono. Questo permette di sfruttare il parallelismo del FetcherAsync durante l'avvio, riducendo i tempi di startup senza bloccare l'interfaccia, migliorando l'esperienza utente iniziale.
       <br></br>
-      <strong>- Menu Interattivo</strong> Loop sincrono per input utente mentre thread girano in background, fornendo un'interfaccia testuale semplice.
+      <strong>- Menu Interattivo Sincrono</strong> Implementazione di un loop sincrono per l'interazione utente basato su input() dalla console. Mentre il thread di monitoraggio gira in background, il main thread rimane disponibile per comandi utente, creando una separazione chiara tra operazioni automatiche (asincrone/thread) e interazioni utente (sincrone).
       <br></br>
-      <strong>- Integrazione Componenti</strong> Collegamento tra Catalogo, Cercatore, Fetcher e Thread per un funzionamento coeso e modulare dell'applicazione.
+      <strong>- Integrazione Coesa dei Componenti</strong> Collegamento strutturato tra Catalogo (storage), Cercatore (query), FetcherAsync (caricamento parallelo) e ThreadMonitoraggio (aggiornamenti automatici). Ogni componente ha responsabilità chiare ma collabora attraverso interfacce ben definite, creando un'architettura modulare e manutenibile.
     </p>
     <div class="code-wrap">
       <div class="code-header"><div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div><div class="code-lang">Python</div></div>
-      <div class="code-body"><pre><code><span class="kw">class</span> <span class="cls">PulseNews</span>:
+      <div class="code-body"><pre><code><span class="kw">import</span> asyncio
+
+<span class="kw">class</span> <span class="cls">PulseNews</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
         <span class="kw">self</span>._catalogo = Catalogo()
         <span class="kw">self</span>._cercatore = Cercatore(<span class="kw">self</span>._catalogo)
@@ -641,7 +737,9 @@ body {
       <h2 class="section-title">Demo <span>Live Finale</span></h2>
     </div>
     <p class="theory-text">
-      Questa simulazione rappresenta esattamente cosa accade nel tuo terminale avviando il file <code>pulsenews_main.py</code>, dimostrando il menu interattivo e le operazioni in tempo reale.
+      <strong>Descrizione Generale:</strong> Questa sezione presenta una demo interattiva che simula l'esecuzione completa dell'applicazione PulseNews, mostrando il menu principale e tutte le funzionalità in azione, inclusi caricamento dati, ricerche, filtri e monitoraggio in tempo reale.
+      <br></br>
+      Questa simulazione interattiva rappresenta fedelmente l'esperienza utente reale dell'applicazione PulseNews quando viene eseguita dal terminale tramite il comando <code>python pulsenews_main.py</code>. La demo mostra il menu interattivo completo con tutte le funzionalità implementate, permettendo di esplorare in tempo reale le operazioni di caricamento dati, ricerca avanzata, analisi del corpus, gestione fonti e monitoraggio background. Ogni pulsante simula un comando effettivo, dimostrando come l'applicazione risponde agli input utente e gestisce operazioni asincrone e multithread in background.
     </p>
     <div class="demo-container">
       <div class="demo-toolbar">
@@ -826,7 +924,7 @@ body {
         const now = new Date().toLocaleTimeString('it-IT');
         const newArts = Math.floor(Math.random() * 3) + 1;
         articoliCount += newArts;
-        await printLine('demoMonitor', `<span class="out-warn">🔔 [${now}] MONITORAGGIO: +${newArts} nuovi articoli! Totale: ${articoliCount}</span>`, 0);
+        await printLine('demoMonitor', `<span class="out-warn"> [${now}] MONITORAGGIO: +${newArts} nuovi articoli! Totale: ${articoliCount}</span>`, 0);
       }, 10000);
     }
   }
